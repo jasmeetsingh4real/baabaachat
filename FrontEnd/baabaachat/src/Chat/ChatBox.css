@@ -1,0 +1,86 @@
+.chat_container {
+  position: relative;
+  overflow-x: hidden;
+}
+.reciever_name {
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px,
+    rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
+  position: absolute;
+  z-index: 1;
+  background-color: white;
+  width: 100%;
+}
+.r_name {
+  margin-left: 10px;
+  font-size: 18px;
+}
+.chat_box {
+  background-image: url(https://png.pngtree.com/png-vector/20220630/ourmid/pngtree-seamless-background-element-sound-camera-vector-png-image_5995016.jpg);
+  width: 100%;
+  height: 100%;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+}
+.chat_box_chat {
+  padding: 5px;
+  padding-top: 50px;
+  height: 100%;
+  width: 100%;
+  background-color: rgba(185, 237, 245, 0.34);
+  overflow-y: scroll;
+  position: relative;
+  bottom: 0;
+  display: flex;
+  align-items: flex-end;
+}
+.chats {
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: end;
+  width: 100%;
+  height: max-content;
+}
+.message_box {
+  background-color: white;
+  padding: 5px;
+  width: 50%;
+}
+.back_button {
+  height: 30px;
+  width: 30px;
+}
+.back_button:hover {
+  cursor: pointer;
+}
+.back_button img {
+  height: 100%;
+}
+.message {
+  background-color: white;
+  padding: 10px;
+
+  border: 1px solid black;
+}
+.sender_chat,
+.reciever_chat {
+  margin: 10px 0;
+}
+.reciever {
+  border-radius: 5px 5px 0px 5px;
+}
+.sender {
+  border-radius: 5px 5px 5px 0px;
+}
+@media (max-width: 700px) {
+  .chat_container {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0px;
+    z-index: 0;
+  }
+}

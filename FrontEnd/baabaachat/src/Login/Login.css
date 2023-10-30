@@ -1,0 +1,98 @@
+.login_page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #b9edf5;
+  flex-direction: column;
+}
+.sheep_dp_container {
+  background-color: white;
+  width: 200px;
+  height: 200px;
+  overflow: hidden;
+  border-radius: 50%;
+  position: relative;
+}
+.dp_shadow_box {
+  height: 100%;
+  width: 100%;
+  border-radius: 50%;
+  box-shadow: 5px 5px 5px rgb(209, 209, 209) inset;
+  position: absolute;
+  z-index: 2;
+}
+.sheep_dp_container img {
+  left: -15px;
+  height: 130%;
+  z-index: 1;
+  position: absolute;
+}
+.login_form_container {
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px,
+    rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
+  padding: 5px;
+  padding-left: 20px;
+  margin-top: 30px;
+  display: flex;
+  background-color: white;
+  align-items: center;
+  border-radius: 55px;
+  overflow: hidden;
+}
+.login_input_cont input {
+  outline: none;
+  border: none;
+}
+.login_btn_cont {
+  display: flex;
+  align-items: center;
+}
+.login_btn_cont button {
+  color: white;
+  padding: 7px 12px;
+  border: none;
+  background-color: #c4a847;
+  border-radius: 22px;
+}
+.login_btn_cont button:hover {
+  cursor: pointer;
+  background-color: #d2b54f;
+}
+.login_btn_cont button:focus .login_input_cont input:focus {
+  outline: none;
+}
+.baabaainfo {
+  color: rgb(76, 76, 76);
+  line-height: 15px;
+  text-align: center;
+  font-size: 12px;
+}
+.link {
+  color: rgb(59, 59, 59);
+}
+.animateFromTop {
+  animation: fadeFromTop 0.5s ease-in-out;
+}
+.comeFromRight {
+  animation: MoveSheepFromRight 0.5s ease-in-out;
+}
+@keyframes fadeFromTop {
+  from {
+    transform: translateY(-30px);
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0px);
+  }
+}
+@keyframes MoveSheepFromRight {
+  from {
+    transform: translateX(50px);
+    opacity: 1;
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0px);
+  }
+}
