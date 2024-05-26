@@ -5,7 +5,8 @@ import ChatBox from "./Chat/ChatBox";
 import "./App.css";
 import "./Home.css";
 import axios from "axios";
-export default function Home() {
+import moment from "moment";
+export default function Home(props) {
   const [users, setUsers] = useState([]);
   const [filteredUsers, setFiltersUsers] = useState([]);
   const [searchedUser, setSearchedUser] = useState();
@@ -13,12 +14,25 @@ export default function Home() {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const [showLogout, setShowLogout] = useState(false);
+  const [chatBoxId, setChatBoxId] = useState("");
   // const [recieverName, setReieverName] = useState("");
   const [hide, setHide] = useState(false);
   const [hideChat, setHideChat] = useState(true);
   const [friends, setFriends] = useState([]);
+  const [loadOld, setLoadOld] = useState(false);
   const navigate = useNavigate();
   const ip = process.env.REACT_APP_IP;
+  const messagesEndRef = useRef(null);
+  useEffect(() => {
+    props.socket.on("recieve_message", (data) => {
+      setLoadOld(false);
+      getMessages();
+    });
+  }, [props.socket]);
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+  // console.log(moment(firstMessageDate).format("lll"));
   useEffect(() => {
     if (!localStorage.getItem("LoggedIn")) {
       navigate("/welcomeToBaaBaaChat");
@@ -29,25 +43,14 @@ export default function Home() {
     getFriends();
     getUsers();
   }, []);
-  let intervalId = null;
   useEffect(() => {
-    // getMessages();
-    intervalId = setInterval(() => {
-      if (
-        !localStorage.getItem("LoggedIn") ||
-        !localStorage.getItem("reciever_name")
-      ) {
-        return;
-      }
-      getMessages();
-    }, 3000);
+    getMessages();
     if (!localStorage.getItem("reciever_name")) {
-      clearInterval(intervalId);
     }
   }, [hide, hideChat]);
   const getFriends = async () => {
     try {
-      const res = await axios.get(`${ip}/getFriends`, {
+      const res = await axios.get(`${ip}/api/user/getFriends`, {
         params: {
           id: localStorage.getItem("_id"),
         },
@@ -59,26 +62,25 @@ export default function Home() {
       console.log(err);
     }
   };
-  // console.log(friends);
-  const getMessages = async () => {
-    // if (!localStorage.getItem("reciever_id")) {
-    //   return;
-    // }
-    const res = await axios.get(`${ip}/getMessages`, {
+  const getMessages = async (
+    messageData = {
+      reciever_id: localStorage.getItem("reciever_id"),
+      firstMessageDate: undefined,
+    }
+  ) => {
+    const res = await axios.get(`${ip}/api/user/getMessages`, {
       params: {
-        users: [
-          localStorage.getItem("reciever_id"),
-          localStorage.getItem("_id"),
-        ],
+        users: [messageData.reciever_id, localStorage.getItem("_id")],
+        firstMessageDate: messageData.firstMessageDate,
       },
     });
     if (res?.status === 200) {
-      setMessages(res.data.chat);
+      if (!loadOld) setMessages(res.data.chat);
+      else setMessages(res.data.chat);
     }
   };
-  // console.log(messages);
   const getUsers = async () => {
-    const users = await axios.get(`${ip}/getUsers`);
+    const users = await axios.get(`${ip}/api/user/getUsers`);
     if (users.data.length) {
       setUsers(users.data);
     } else {
@@ -104,21 +106,53 @@ export default function Home() {
     if (!message || !localStorage.getItem("reciever_id")) {
       return;
     }
-    const res = await axios.post(`${ip}/sendMessage`, {
+    setLoadOld(false);
+    const messageObj = {
       users: [localStorage.getItem("_id"), localStorage.getItem("reciever_id")],
       chat: {
         user: localStorage.getItem("_id"),
         message,
         createdAt: Date(),
       },
-    });
+    };
+    const res = await axios.post(`${ip}/api/user/sendMessage`, messageObj);
     if (res.status === 200) {
       getMessages();
+      console.log("by res");
       setMessage("");
-      getFriends();
+      props.socket.emit("send_message", { messageObj, chatBoxId });
     }
   };
+  //join room
+  const getChatBoxId = async (reciever_id) => {
+    const res = await axios.get(`${ip}/api/user/getChatBoxId`, {
+      params: {
+        users: [reciever_id, localStorage.getItem("_id")],
+      },
+    });
 
+    if (res?.status === 200) {
+      if (res?.data?.chatBoxId) {
+        setChatBoxId(res?.data?.chatBoxId);
+        props.socket.emit("join_chatBox", res?.data?.chatBoxId);
+      }
+    }
+  };
+  const scrollToBottom = () => {
+    if (!loadOld)
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    else messagesEndRef.current?.scrollIntoView({ block: "end" });
+  };
+  const getOldMessages = () => {
+    setLoadOld(true);
+    if (messages.length > 0) {
+      console.log(messages[messages.length - 1].createdAt);
+      getMessages({
+        reciever_id: localStorage.getItem("reciever_id"),
+        firstMessageDate: messages[messages.length - 1].createdAt,
+      });
+    }
+  };
   return (
     <div className="page_body">
       <div className="page_actions_container">
@@ -183,6 +217,8 @@ export default function Home() {
                     // setReieverName(user);
                     localStorage.setItem("reciever_name", user.name);
                     localStorage.setItem("reciever_id", user._id);
+                    getChatBoxId(user._id);
+                    getMessages({ reciever_id: user._id });
                     setSearchedUser({});
                     setFiltersUsers([]);
                   }}
@@ -206,9 +242,10 @@ export default function Home() {
               onClick={() => {
                 setHide(true);
                 setHideChat(false);
-
+                getChatBoxId(friend._id);
                 localStorage.setItem("reciever_name", friend.name);
                 localStorage.setItem("reciever_id", friend._id);
+                getMessages({ reciever_id: friend._id });
                 setSearchedUser({});
                 setFiltersUsers([]);
               }}
@@ -218,7 +255,8 @@ export default function Home() {
           ))}
         </div>
         <ChatBox
-          intervalId={intervalId}
+          getOldMessages={getOldMessages}
+          socket={props.socket}
           id={searchedUser?._id}
           setMessage={setMessage}
           sendMessage={sendMessage}
@@ -230,6 +268,7 @@ export default function Home() {
           setMessages={setMessages}
           setHideChat={setHideChat}
           setSearchedUser={setSearchedUser}
+          messagesEndRef={messagesEndRef}
         />
         {hideChat && (
           <div className="h-100 w-100 d-flex align-items-center justify-content-center">

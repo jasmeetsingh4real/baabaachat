@@ -30,10 +30,9 @@ export default function Login() {
       if (!username.trim()) {
         throw new Error("Please enter username");
       }
-      const res = await axios.post(`${ip}/login`, {
+      const res = await axios.post(`${ip}/api/user/login`, {
         username,
       });
-      console.log(res);
       if (res.status === 200) {
         setError(false);
         localStorage.setItem("LoggedIn", "true");
@@ -87,10 +86,11 @@ export default function Login() {
               </div>
             </div>
           </form>
-          <i className="baabaainfo mt-3 mb-2 mx-4">
+          {/* <i className="baabaainfo mt-3 mb-2 mx-4">
             With BaaBaaChat, you can chat like a sheep and have a woolly good
             time! 🐑🐑🐑
-          </i>
+          </i> */}
+          <br />
           <NavLink className="link" to="/createAccount">
             Create Account
           </NavLink>

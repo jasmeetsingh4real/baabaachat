@@ -23,11 +23,10 @@ export default function CreateAccount() {
   const addUser = async (e) => {
     try {
       e.preventDefault();
-      const res = await axios.post(`${ip}/addUser`, {
+      const res = await axios.post(`${ip}/api/user/addUser`, {
         name: userName,
       });
       if (res.status === 200) {
-        console.log(res);
         setError(false);
         setUserName("");
         setErrorMessage(`$User Added (${res?.data?.savedUser?.name})`);
@@ -92,9 +91,10 @@ export default function CreateAccount() {
                 </button>
               </div>
             </form>
-            <i className="baabaainfo mt-3 mb-2 mx-4">
+            {/* <i className="baabaainfo mt-3 mb-2 mx-4">
               Join the sheep community!
-            </i>
+            </i> */}
+            <br />
             <NavLink className="link" to="/login">
               login
             </NavLink>

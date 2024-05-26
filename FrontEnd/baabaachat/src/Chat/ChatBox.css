@@ -2,16 +2,22 @@
   position: relative;
   overflow-x: hidden;
 }
-.reciever_name {
-  padding: 5px;
-  display: flex;
-  align-items: center;
+.chat-header {
+  background: white;
   box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px,
     rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   position: absolute;
   z-index: 1;
-  background-color: white;
+  padding: 5px;
   width: 100%;
+}
+.reciever_name {
+  display: flex;
+  align-items: center;
+  /* background-color: white; */
 }
 .r_name {
   margin-left: 10px;
@@ -32,10 +38,10 @@
   width: 100%;
   background-color: rgba(185, 237, 245, 0.34);
   overflow-y: scroll;
-  position: relative;
-  bottom: 0;
-  display: flex;
-  align-items: flex-end;
+  /* position: relative; */
+  /* bottom: 0; */
+  /* display: flex;
+  align-items: flex-end; */
 }
 .chats {
   display: flex;
@@ -60,20 +66,23 @@
   height: 100%;
 }
 .message {
-  background-color: white;
+  max-width: max-content;
   padding: 10px;
-
   border: 1px solid black;
-}
-.sender_chat,
-.reciever_chat {
-  margin: 10px 0;
 }
 .reciever {
   border-radius: 5px 5px 0px 5px;
 }
 .sender {
   border-radius: 5px 5px 5px 0px;
+}
+.sender_chat,
+.reciever_chat {
+  margin: 10px 0;
+}
+
+.chat-time {
+  font-size: 10px;
 }
 @media (max-width: 700px) {
   .chat_container {
